@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "523886626233",
+    "firebase_url": "https://lpcc-library-default-rtdb.firebaseio.com",
+    "project_id": "lpcc-library",
+    "storage_bucket": "lpcc-library.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:523886626233:android:4c86566bdeaeca8b6a2268",
+        "android_client_info": {
+          "package_name": "com.lilyspadchildcare.lpcc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtqzSSn4Y2bWSvREGPhtL3-58_vJ4JrKM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
