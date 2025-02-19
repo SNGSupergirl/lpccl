@@ -1,9 +1,17 @@
 //home_page.dart
 
 import 'package:flutter/material.dart';
+import 'login_page.dart'; // Import your login page
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool isLoggedIn = false; // Replace with your actual login state management
 
   @override
   Widget build(BuildContext context) {
@@ -17,15 +25,55 @@ class HomePage extends StatelessWidget {
               // Handle search action
             },
           ),
-          IconButton(
-            icon: const CircleAvatar(
-              backgroundImage: NetworkImage(
-                  "https://www.seekpng.com/png/full/115-1150053_avatar-png-transparent-png-royalty-free-default-avatar.png"),
-            ),
-            onPressed: () {
-              // Handle user profile action
+
+          PopupMenuButton<String>(
+            // PopupMenuButton is the icon
+            onSelected: (value) {
+              if (isLoggedIn) {
+                if (value == 'Profile') {
+                  // Navigate to profile page
+                } else if (value == 'Logout') {
+                  // Handle logout logic
+                  setState(() {
+                    isLoggedIn = false; // Update login state
+                  });
+                }
+              } else {
+                if (value == 'Login') {
+                  Navigator.push(
+                    // Navigate to Login Page
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                }
+              }
             },
-          ),
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuEntry<String>>[
+                if (isLoggedIn)
+                  const PopupMenuItem<String>(
+                    value: 'Profile',
+                    child: Text('Profile'),
+                  ),
+                if (isLoggedIn)
+                  const PopupMenuItem<String>(
+                    value: 'Logout',
+                    child: Text('Logout'),
+                  ),
+                if (!isLoggedIn)
+                  const PopupMenuItem<String>(
+                    value: 'Login',
+                    child: Text('Login'),
+                  ),
+              ];
+            },
+            child: const CircleAvatar(
+              // The avatar is the child of the PopupMenuButton
+              backgroundImage: NetworkImage(
+                "https://www.seekpng.com/png/full/115-1150053_avatar-png-transparent-png-royalty-free-default-avatar.png",
+              ),
+            ),
+          ), // End of PopupMenuButton
           IconButton(
             icon: const Icon(Icons.menu),
             onPressed: () {
@@ -67,13 +115,11 @@ class HomePage extends StatelessWidget {
               children: const [
                 Image(
                   image: NetworkImage(
-                      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Books-3.svg/1024px-Books-3.svg.png"),
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Books-3.svg/1024px-Books-3.svg.png",
+                  ),
                   height: 100,
                 ),
-                Text(
-                  "Read, Learn, Live",
-                  style: TextStyle(fontSize: 20),
-                ),
+                Text("Read, Learn, Live", style: TextStyle(fontSize: 20)),
               ],
             ),
           ),
