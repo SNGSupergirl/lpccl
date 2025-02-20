@@ -1,4 +1,6 @@
-package com.lilyspadchildcare.lpccl
+// MainActivity.kt
+
+package com.lilyspadchildcare.lpcc
 
 import io.flutter.embedding.android.FlutterActivity
 

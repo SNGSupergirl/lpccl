@@ -22,6 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
   //... (add controllers for other fields as needed)
 
   @override
@@ -220,27 +221,60 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _registerUser(BuildContext context) async {
     try {
       // 1. Gather user data from the form fields
-      final fullName = _fullNameController.text; // Example
-      final username = _usernameController.text; // Example
-      final email = _emailController.text; // Example
-      final password = _passwordController.text; // Example
-      //... (gather other data)
+      final fullName = _fullNameController.text;
+      final username = _usernameController.text;
+      final email = _emailController.text;
+      final password = _passwordController.text;
 
-      // 2. Create user with email and password
+      // 2. Check if username or email already exists
+      final usernameQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .get();
+      if (usernameQuery.docs.isNotEmpty) {
+        // Show error message: Username already exists
+        return;
+      }
+
+      final emailQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+      if (emailQuery.docs.isNotEmpty) {
+        // Show error message: Email already exists
+        return;
+      }
+
+      // 3. Create user with email and password
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      // 3. Store user data in Firestore
+      // 4. Get the next available library card number
+      final lastCardNumberQuery = await FirebaseFirestore.instance
+          .collection('library_card_numbers')
+          .doc('last_number')
+          .get();
+      int lastCardNumber = lastCardNumberQuery.data()?['number'] ?? 0;
+      int newCardNumber = lastCardNumber + 1;
+
+      // 5. Update the last library card number
+      await FirebaseFirestore.instance
+          .collection('library_card_numbers')
+          .doc('last_number')
+          .set({'number': newCardNumber});
+
+      // 6. Store user data in Firestore
       final user = credential.user;
       if (user != null) {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'fullName': fullName,
           'username': username,
+          'libraryCardNumber': newCardNumber,
           //... (store other data)
         });
       }
 
-      // 4. Navigate to the home page
+      // 7. Navigate to the home page
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
