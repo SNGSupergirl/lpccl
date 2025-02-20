@@ -280,6 +280,7 @@ class _RegisterPageState extends State<RegisterPage> {
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } on FirebaseAuthException catch (e) {
+      print("Firebase exception: ${e.code}"); // Added print statement
       if (e.code == 'weak-password') {
         // Show error message: Weak password
       } else if (e.code == 'email-already-in-use') {
@@ -288,6 +289,7 @@ class _RegisterPageState extends State<RegisterPage> {
         // Show generic error message
       }
     } catch (e) {
+      print("Generic exception: $e"); // Added print statement
       // Show generic error message
     }
   }
