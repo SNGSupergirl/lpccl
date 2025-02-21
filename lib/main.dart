@@ -1,3 +1,5 @@
+//   main.dart
+
 import 'package:flutter/material.dart';
 import 'loading_page.dart'; // Import your loading page
 import 'package:firebase_core/firebase_core.dart';
