@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'book_details_page.dart'; // Import BookDetailsPage
 
 class InventoryPage extends StatelessWidget {
   const InventoryPage({Key? key}): super(key: key);
@@ -9,15 +10,11 @@ class InventoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-
       appBar: AppBar(
         title: const Text("Full Inventory"),
-
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('books').snapshots(),
-
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -34,36 +31,45 @@ class InventoryPage extends StatelessWidget {
               crossAxisCount: 3, // Number of columns in the grid
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
+              childAspectRatio: 0.6, // Adjust the aspect ratio to make the boxes longer
             ),
             itemCount: books.length,
             itemBuilder: (context, index) {
               final book = books[index].data() as Map<String, dynamic>;
               final imageLinks = book['imageLinks'] as Map<String, dynamic>?;
               final imageUrl = imageLinks?['thumbnail'] as String?;
-              return Card(
-                  clipBehavior: Clip.antiAlias,
-                  child: Expanded( // Wrap the Column with Expanded
-                  child: Column(
-                  children: [
-                  SizedBox(
-                  height: 60,
-                  width: 60,
-                  child: imageUrl!= null
-                  ? Image.network(imageUrl, width: 60, height: 60, fit: BoxFit.cover)
-                  : const Icon(Icons.book),
-              ),
-              Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-              book['title'],
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-                      ),
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BookDetailsPage(bookData: book),
                     ),
-                  ],
+                  );
+                },
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 150,
+                        child: imageUrl!= null
+                            ? Image.network(imageUrl, fit: BoxFit.cover)
+                            : const Icon(Icons.book),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          book['title'],
+                          maxLines: 3, // Increased maxLines to 3
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ));
+              );
             },
           );
         },

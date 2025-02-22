@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'edit_profile_page.dart';
+import 'favorites_page.dart'; // Import the FavoritesPage
+import 'holds_page.dart'; // Import the HoldsPage
+import 'saved_page.dart'; // Import the SavedPage
+
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -25,7 +30,8 @@ class ProfilePage extends StatelessWidget {
                   .get(),
               builder: (context, userSnapshot) {
                 if (userSnapshot.hasData) {
-                  final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+                  final userData =
+                  userSnapshot.data!.data() as Map<String, dynamic>;
                   return SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,16 +52,34 @@ class ProfilePage extends StatelessWidget {
                                     fontSize: 24, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 10),
-                              Text('Member Since: ${userData['memberSince']?? 'Unknown'}'),
+                              Text(
+                                  'Member Since: ${userData['memberSince']?? 'Unknown'}'),
                             ],
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            'Library Card Number:',
-                            style: TextStyle(fontSize: 18),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Library Card Number:',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Navigate to EditProfilePage
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                        const EditProfilePage()),
+                                  );
+                                },
+                                child: const Text("Edit Profile"),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -65,6 +89,29 @@ class ProfilePage extends StatelessWidget {
                             style: const TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.bold),
                           ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Holds, Favorites, and Saved Icons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildIconWithText(
+                              'assets/images/hold_icon.png',
+                              'Holds',
+                                  () => _navigateToPage(context, const HoldsPage()),
+                            ),
+                            _buildIconWithText(
+                              'assets/images/favorite_icon.png',
+                              'Favorites',
+                                  () =>
+                                  _navigateToPage(context, const FavoritesPage()),
+                            ),
+                            _buildIconWithText(
+                              'assets/images/save_book_icon_two.png',
+                              'Saved',
+                                  () => _navigateToPage(context, const SavedPage()),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 20),
                         Padding(
@@ -150,7 +197,8 @@ class ProfilePage extends StatelessWidget {
                           height: 100,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: 3, // Replace with actual number of badges
+                            itemCount:
+                            3, // Replace with actual number of badges
                             itemBuilder: (context, index) {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -184,6 +232,30 @@ class ProfilePage extends StatelessWidget {
           }
         },
       ),
+    );
+  }
+
+  Widget _buildIconWithText(
+      String imagePath, String text, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Image.asset(
+            imagePath,
+            height: 50,
+          ),
+          const SizedBox(height: 8),
+          Text(text),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToPage(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => page),
     );
   }
 }
