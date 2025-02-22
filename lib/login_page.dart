@@ -35,15 +35,19 @@ class _LoginPageState extends State<LoginPage> {
     ),
     body: Center(
     child: SingleChildScrollView(
+      reverse: true,
     padding: const EdgeInsets.all(20.0),
     child: Form(
     key: _formKey,
     child: Column(
+
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
+
       // Library Logo and Motto
       Center(
         child: Column(
+
           children: [
             Image.asset(
               'assets/images/widelogo.png',
