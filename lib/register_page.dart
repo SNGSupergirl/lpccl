@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'auth_provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -22,6 +24,12 @@ class _RegisterPageState extends State<RegisterPage> {
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _birthdayController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _stateController = TextEditingController();
+  final _zipCodeController = TextEditingController();
+  final _favoriteBookController = TextEditingController();
 
   //... (add controllers for other fields as needed)
 
@@ -32,6 +40,12 @@ class _RegisterPageState extends State<RegisterPage> {
     _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _birthdayController.dispose();
+    _addressController.dispose();
+    _cityController.dispose();
+    _stateController.dispose();
+    _zipCodeController.dispose();
+    _favoriteBookController.dispose();
     //... (dispose of other controllers)
     super.dispose();
   }
@@ -119,6 +133,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
               // Birthday
               TextFormField(
+                controller: _birthdayController, // Assign the controller
                 decoration: const InputDecoration(
                   labelText: "Birthday (Month and Day)",
                   border: OutlineInputBorder(),
@@ -128,6 +143,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
               // Street Address
               TextFormField(
+                controller: _addressController, // Assign the controller
                 decoration: const InputDecoration(
                   labelText: "Street Address",
                   border: OutlineInputBorder(),
@@ -137,6 +153,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
               // City
               TextFormField(
+                controller: _cityController, // Assign the controller
                 decoration: const InputDecoration(
                   labelText: "City",
                   border: OutlineInputBorder(),
@@ -146,6 +163,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
               // State
               TextFormField(
+                controller: _stateController, // Assign the controller
                 decoration: const InputDecoration(
                   labelText: "State",
                   border: OutlineInputBorder(),
@@ -155,6 +173,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
               // Zip Code
               TextFormField(
+                controller: _zipCodeController, // Assign the controller
                 decoration: const InputDecoration(
                   labelText: "Zip Code",
                   border: OutlineInputBorder(),
@@ -164,6 +183,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
               // Favorite Book
               TextFormField(
+                controller: _favoriteBookController, // Assign the controller
                 decoration: const InputDecoration(
                   labelText: "Favorite Book",
                   border: OutlineInputBorder(),
@@ -217,6 +237,8 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+
+
   // Function to handle registration logic
   Future<void> _registerUser(BuildContext context) async {
     try {
@@ -225,6 +247,12 @@ class _RegisterPageState extends State<RegisterPage> {
       final username = _usernameController.text;
       final email = _emailController.text;
       final password = _passwordController.text;
+      final birthday = _birthdayController.text; // Add controller for birthday
+      final address = _addressController.text; // Add controller for address
+      final city = _cityController.text; // Add controller for city
+      final state = _stateController.text; // Add controller for state
+      final zipCode = _zipCodeController.text; // Add controller for zip code
+      final favoriteBook = _favoriteBookController.text; // Add controller for favorite book
 
       // 2. Check if username or email already exists
       final usernameQuery = await FirebaseFirestore.instance
@@ -269,10 +297,20 @@ class _RegisterPageState extends State<RegisterPage> {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'fullName': fullName,
           'username': username,
+          'email': email, // Add email
+          'password': password, // Add password (consider hashing for security)
+          'birthday': birthday, // Add birthday
+          'address': address, // Add address
+          'city': city, // Add city
+          'state': state, // Add state
+          'zipCode': zipCode, // Add zip code
+          'favoriteBook': favoriteBook, // Add favorite book
           'libraryCardNumber': newCardNumber,
           //... (store other data)
         });
       }
+// After successful registration:
+      Provider.of<AppAuthProvider>(context, listen: false).setLoggedIn(true);
 
       // 7. Navigate to the home page
       Navigator.pushReplacement(

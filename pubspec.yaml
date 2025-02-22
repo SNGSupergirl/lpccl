@@ -33,13 +33,28 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+
+  # iOS-style icons
   cupertino_icons: ^1.0.8
+
+  # SQLite database
   sqflite: ^2.4.2
+
+  # Barcode and QR code scanning
   mobile_scanner: ^6.0.6 # Or latest version
+
+  # HTTP requests
   http: ^1.3.0 # Or latest version
+
+  # Firebase core
   firebase_core: ^3.12.0
+
+  # Firebase authentication
   firebase_auth: ^5.4.2
+
+  # Cloud Firestore database
   cloud_firestore: ^5.6.3
+  provider: ^6.1.2
 
 
 dev_dependencies:
