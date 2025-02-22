@@ -132,11 +132,9 @@ class _HomePageState extends State<HomePage> {
                 // Library Logo and Motto
                 Center(
                   child: Column(
-                    children: const [
-                      Image(
-                        image: NetworkImage(
-                          "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Books-3.svg/1024px-Books-3.svg.png",
-                        ),
+                    children: [
+                    Image.asset(
+                    'assets/images/widelogo.png',
                         height: 100,
                       ),
                       Text("Read, Learn, Live", style: TextStyle(fontSize: 20)),

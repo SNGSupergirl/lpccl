@@ -29,8 +29,8 @@ class _LoadingPageState extends State<LoadingPage> {
       backgroundColor: const Color(0xFF4CAF50), // Green background color
       body: Center(
         child: Image.asset(
-          'assets/images/widelogo.png', // Replace with your logo path
-          height: 200, // Adjust height as needed
+          'assets/images/library_logo_two.png', // Replace with your logo path
+          height: 400, // Adjust height as needed
         ),
       ),
     );
