@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'login_page.dart'; // Import your login page
 import 'package:provider/provider.dart';
 import 'auth_provider.dart'; // Import the AuthProvider class
+import 'profile_page.dart'; // Import the ProfilePage
+import 'edit_profile_page.dart'; // Import the EditProfilePage
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,11 +31,22 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 PopupMenuButton<String>(
-                  // PopupMenuButton is the icon
                   onSelected: (value) {
                     if (authProvider.isLoggedIn) {
                       if (value == 'Profile') {
-                        // Navigate to profile page
+                        // Navigate to ProfilePage
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ProfilePage()),
+                        );
+                      } else if (value == 'Edit Profile') {
+                        // Navigate to EditProfilePage
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const EditProfilePage()),
+                        );
                       } else if (value == 'Logout') {
                         // Handle logout logic
                         authProvider.setLoggedIn(
@@ -56,6 +69,11 @@ class _HomePageState extends State<HomePage> {
                         const PopupMenuItem<String>(
                           value: 'Profile',
                           child: Text('Profile'),
+                        ),
+                      if (authProvider.isLoggedIn)
+                        const PopupMenuItem<String>(
+                          value: 'Edit Profile',
+                          child: Text('Edit Profile'),
                         ),
                       if (authProvider.isLoggedIn)
                         const PopupMenuItem<String>(
