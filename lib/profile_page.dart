@@ -17,6 +17,19 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("LPCC Library"),
+        actions: [
+          // Edit Profile Button
+          ElevatedButton(
+            onPressed: () {
+              // Navigate to EditProfilePage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const EditProfilePage()),
+              );
+            },
+            child: const Text("Edit Profile"),
+          ),
+        ],
       ),
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -67,27 +80,13 @@ class ProfilePage extends StatelessWidget {
                                 'Library Card Number:',
                                 style: TextStyle(fontSize: 18),
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  // Navigate to EditProfilePage
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                        const EditProfilePage()),
-                                  );
-                                },
-                                child: const Text("Edit Profile"),
+                              const SizedBox(height: 10),
+                              Text(
+                                userData['libraryCardNumber'].toString(),
+                                style: const TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.bold),
                               ),
                             ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Center(
-                          child: Text(
-                            userData['libraryCardNumber'].toString(),
-                            style: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(height: 20),
