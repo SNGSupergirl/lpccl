@@ -46,10 +46,10 @@ class InventoryPage extends StatelessWidget {
                   child: Column(
                   children: [
                   SizedBox(
-                  height: 110,
-                  width: 90,
+                  height: 60,
+                  width: 60,
                   child: imageUrl!= null
-                  ? Image.network(imageUrl, fit: BoxFit.cover)
+                  ? Image.network(imageUrl, width: 60, height: 60, fit: BoxFit.cover)
                   : const Icon(Icons.book),
               ),
               Padding(
