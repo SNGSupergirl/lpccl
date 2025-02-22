@@ -29,7 +29,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+      backgroundColor: const Color(0xFFE0F2F1), // Set light green background color
+      appBar: AppBar(
         title: const Text("Login"),
     ),
     body: Center(
@@ -43,14 +44,13 @@ class _LoginPageState extends State<LoginPage> {
       // Library Logo and Motto
       Center(
         child: Column(
-          children: const [
-            Image(
-              image: NetworkImage(
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Books-3.svg/1024px-Books-3.svg.png"),
+          children: [
+            Image.asset(
+              'assets/images/widelogo.png',
               height: 100,
             ),
             Text(
-              "Read, Learn, Live",
+              "Where the imagination grows!",
               style: TextStyle(fontSize: 20),
             ),
           ],
