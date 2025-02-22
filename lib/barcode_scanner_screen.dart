@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'book_api.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
   const BarcodeScannerScreen({super.key});
@@ -32,34 +35,77 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       appBar: AppBar(
         title: const Text('Barcode Scanner'),
       ),
-      body: Stack(
-        children: [
-          MobileScanner(
-            controller: controller,
-            fit: BoxFit.cover, // Make scanner fill the screen
-            onDetect: (barcodeCapture) {
-              if (isScanning) { // Only process if scanning is active
-                setState(() {
-                  barcode = barcodeCapture.barcodes.first.rawValue;
-                  isScanning = false; // Stop scanning after detection
-                });
-
-                if (barcode != null) {
-                  controller?.stop(); // Stop the camera
-                  Navigator.pop(context, barcode); // Return the barcode
-                }
-              }
-            },
-          ),
-          Center( // Overlay a "Scanning..." indicator
-            child: isScanning
-                ? const Text(
-              "Scanning...",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            )
-                : const SizedBox.shrink(), // Empty widget when not scanning
-          ),
-        ],
+      body: FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData ||!snapshot.data!.exists) {
+            return const Center(child: Text('User data not found'));
+          }
+          final userData = snapshot.data!.data() as Map<String, dynamic>;
+          if (userData['isAdmin'] == true) {
+            // User is admin, show the scanner
+            return Stack(
+              children: [
+                MobileScanner(
+                  controller: controller,
+                  fit: BoxFit.cover,
+                  onDetect: (barcodeCapture) async {
+                    if (isScanning) {
+                      setState(() {
+                        barcode = barcodeCapture.barcodes.first.rawValue;
+                        isScanning = false;
+                      });
+                      if (barcode!= null) {
+                        controller?.stop();
+                        // Fetch book data from Google Books API
+                        final bookData = await fetchBookData(barcode!);
+                        if (bookData!= null) {
+                          // Store book data in Firestore
+                          await FirebaseFirestore.instance
+                              .collection('books')
+                              .doc(barcode)
+                              .set(bookData);
+                          // Show a success message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Book added to database!')),
+                          );
+                        } else {
+                          // Show an error message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Book not found')),
+                          );
+                        }
+                        Navigator.pop(context, barcode);
+                      }
+                    }
+                  },
+                ),
+                Center(
+                  child: isScanning
+                      ? const Text(
+                    "Scanning...",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  )
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            );
+          } else {
+            // User is not admin, show a message
+            return const Center(
+              child: Text('You do not have permission to scan books.'),
+            );
+          }
+        },
       ),
     );
   }

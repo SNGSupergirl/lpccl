@@ -3,26 +3,33 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-Future<Map<String, dynamic>> fetchBookData(String isbn) async {
-  final url = Uri.parse('https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn'); // Example using Google Books API
-  final response = await http.get(url);
+Future<Map<String, dynamic>?> fetchBookData(String isbn) async {
+  final response = await http.get(
+    Uri.parse('https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn'),
+  );
 
   if (response.statusCode == 200) {
-    final jsonData = jsonDecode(response.body);
-    // Process the JSON data and extract the book information you need
-    // ... (e.g., title, author, etc.)
-    if (jsonData['items'] != null && jsonData['items'].isNotEmpty) {
-      final book = jsonData['items'][0]['volumeInfo'];
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    if (jsonData['totalItems'] > 0) {
+      final item = jsonData['items']; // Access the first item in the list
+      final volumeInfo = item['volumeInfo'];
       return {
-        'title': book['title'],
-        'author': book['authors'] != null ? book['authors'][0] : 'Unknown',
-        'isbn': isbn, // Make sure to include the isbn
-        // ... other book data
-      };
-    } else {
-      throw Exception('Book not found');
-    }
+      'title': volumeInfo['title'],
+      'authors': volumeInfo['authors'], //
+  'publisher': volumeInfo['publisher'],
+  'publishedDate': volumeInfo['publishedDate'],
+  'description': volumeInfo['description'],
+  'pageCount': volumeInfo['pageCount'],
+  'categories': volumeInfo['categories'], //
+  'averageRating': volumeInfo['averageRating'],
+  'ratingsCount': volumeInfo['ratingsCount'],
+  'imageLinks': volumeInfo['imageLinks']?? {}, //
+  'isbn': isbn,
+  };
   } else {
-    throw Exception('Failed to fetch book data');
+  return null; // Book not found
+  }
+  } else {
+  throw Exception('Failed to fetch book data');
   }
 }

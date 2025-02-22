@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'auth_provider.dart'; // Import the AuthProvider class
 import 'profile_page.dart'; // Import the ProfilePage
 import 'edit_profile_page.dart'; // Import the EditProfilePage
+import 'admin_screen.dart'; // Import the AdminScreen
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -98,6 +99,7 @@ class _HomePageState extends State<HomePage> {
                   icon: const Icon(Icons.menu),
                   onPressed: () {
                     // Handle menu action
+                    _showMenu(context, authProvider);
                   },
                 ),
               ],
@@ -207,5 +209,34 @@ class _HomePageState extends State<HomePage> {
           );
         });
         }
+  void _showMenu(BuildContext context, AppAuthProvider authProvider) {
+    showMenu<String>(
+      context: context,
+      position: const RelativeRect.fromLTRB(1000, 80, 0, 0),
+      items: [
+        if (authProvider.isAdmin!= null && authProvider.isAdmin)
+          const PopupMenuItem<String>(
+            value: 'Admin Screen',
+            child: Text('Admin Screen'),
+          ),
+        const PopupMenuItem<String>( // Add a default menu item
+          value: 'Settings',
+          child: Text('Settings'),
+        ),
+        //... (other menu items)
+      ],
+
+    ).then((value) {
+      if (value == 'Admin Screen') {
+        // Navigate to AdminScreen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const AdminScreen()),
+        );
+      }
+      //... (handle other menu items)
+    });
   }
+}
+
 

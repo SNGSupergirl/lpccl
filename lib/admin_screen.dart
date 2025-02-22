@@ -33,7 +33,7 @@ class _AdminScreenState extends State<AdminScreen> {
               String scannedBarcode = result as String;
               try {
                 final bookData = await fetchBookData(scannedBarcode); // Call fetchBookData
-                await dbHelper.addBook(bookData); // Call addBook
+                await dbHelper.addBook(bookData!); // Call addBook
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Book added!')),
                 );
