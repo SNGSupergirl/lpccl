@@ -7,6 +7,7 @@ import 'auth_provider.dart'; // Import the AuthProvider class
 import 'profile_page.dart'; // Import the ProfilePage
 import 'edit_profile_page.dart'; // Import the EditProfilePage
 import 'admin_screen.dart'; // Import the AdminScreen
+import 'inventory_page.dart'; // Import the InventoryPage
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -199,7 +200,11 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      // Handle view full inventory action
+                      // Navigate to InventoryPage
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const InventoryPage()),
+                      );
                     },
                     child: const Text("View Full Inventory"),
                   ),
@@ -238,5 +243,3 @@ class _HomePageState extends State<HomePage> {
     });
   }
 }
-
-

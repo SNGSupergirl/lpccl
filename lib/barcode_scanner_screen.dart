@@ -66,22 +66,29 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       });
                       if (barcode!= null) {
                         controller?.stop();
-                        // Fetch book data from Google Books API
-                        final bookData = await fetchBookData(barcode!);
-                        if (bookData!= null) {
-                          // Store book data in Firestore
-                          await FirebaseFirestore.instance
-                              .collection('books')
-                              .doc(barcode)
-                              .set(bookData);
-                          // Show a success message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Book added to database!')),
-                          );
-                        } else {
+                        try {
+                          // Fetch book data from Google Books API
+                          final bookData = await fetchBookData(barcode!);
+                          if (bookData!= null) {
+                            // Store book data in Firestore
+                            await FirebaseFirestore.instance
+                                .collection('books')
+                                .doc(barcode)
+                                .set(bookData);
+                            // Show a success message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Book added to database!')),
+                            );
+                          } else {
+                            // Show an error message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Book not found')),
+                            );
+                          }
+                        } catch (e) {
                           // Show an error message
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Book not found')),
+                            SnackBar(content: Text('Error adding book: $e')),
                           );
                         }
                         Navigator.pop(context, barcode);
