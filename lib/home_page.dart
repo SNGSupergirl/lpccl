@@ -1,5 +1,6 @@
 //home_page.dart
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'login_page.dart'; // Import your login page
 import 'package:provider/provider.dart';
@@ -25,12 +26,6 @@ class _HomePageState extends State<HomePage> {
             appBar: AppBar(
               title: const Text("LPCC Library"),
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    // Handle search action
-                  },
-                ),
 
                 PopupMenuButton<String>(
                   onSelected: (value) {
@@ -147,27 +142,15 @@ class _HomePageState extends State<HomePage> {
 
                 // Newly Added Section
                 const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Newly Added",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                "Newly Added",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
                 ),
                 SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 3,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.network(
-                          "https://m.media-amazon.com/images/I/51wS8m9c82L._SX322_BO1,2048,1536,1536_.jpg",
-                          fit: BoxFit.cover,
-                        ),
-                      );
-                    },
-                  ),
+                height: 200,
+                child: _buildNewlyAddedBooks(),
                 ),
 
                 // Recently Checked-Out Section
@@ -242,4 +225,63 @@ class _HomePageState extends State<HomePage> {
       //... (handle other menu items)
     });
   }
+}
+Widget _buildNewlyAddedBooks() {
+  return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body:  StreamBuilder<QuerySnapshot>(
+    stream: FirebaseFirestore.instance
+        .collection('books')
+        .orderBy('publishedDate', descending: true) // Order by published date in descending order
+        .limit(3) // Limit to the 3 most recent books
+        .snapshots(),
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return Center(child: Text('Error: ${snapshot.error}'));
+      }
+
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      final books = snapshot.data!.docs;
+
+      return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: books.length,
+        itemBuilder: (context, index) {
+          final book = books[index].data() as Map<String, dynamic>;
+          final imageLinks = book['imageLinks'] as Map<String, dynamic>?;
+          final imageUrl = imageLinks?['thumbnail'] as String?;
+          return SizedBox(
+            width: 130,
+            height: 50,
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 60,
+                    width: 60,// Set a fixed width for each book item
+                    child: imageUrl!= null
+                        ? Image.network(imageUrl, width: 60, height: 60, fit: BoxFit.cover)
+                        : const Icon(Icons.book),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      book['title'],
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  ));
 }
