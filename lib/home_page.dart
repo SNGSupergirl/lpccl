@@ -9,6 +9,7 @@ import 'profile_page.dart'; // Import the ProfilePage
 import 'edit_profile_page.dart'; // Import the EditProfilePage
 import 'admin_screen.dart'; // Import the AdminScreen
 import 'inventory_page.dart'; // Import the InventoryPage
+import  'book_details_page.dart'; // Import the BookDetailsPage
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -151,6 +152,7 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                 height: 200,
                 child: _buildNewlyAddedBooks(),
+
                 ),
 
                 // Recently Checked-Out Section
@@ -227,13 +229,11 @@ class _HomePageState extends State<HomePage> {
   }
 }
 Widget _buildNewlyAddedBooks() {
-  return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body:  StreamBuilder<QuerySnapshot>(
+  return StreamBuilder<QuerySnapshot>(
     stream: FirebaseFirestore.instance
         .collection('books')
-        .orderBy('publishedDate', descending: true) // Order by published date in descending order
-        .limit(3) // Limit to the 3 most recent books
+        .orderBy('publishedDate', descending: true)
+        .limit(3)
         .snapshots(),
     builder: (context, snapshot) {
       if (snapshot.hasError) {
@@ -246,6 +246,7 @@ Widget _buildNewlyAddedBooks() {
 
       final books = snapshot.data!.docs;
 
+
       return ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: books.length,
@@ -254,19 +255,34 @@ Widget _buildNewlyAddedBooks() {
           final imageLinks = book['imageLinks'] as Map<String, dynamic>?;
           final imageUrl = imageLinks?['thumbnail'] as String?;
           return SizedBox(
-            width: 130,
-            height: 50,
-            child: Card(
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 60,
-                    width: 60,// Set a fixed width for each book item
-                    child: imageUrl!= null
-                        ? Image.network(imageUrl, width: 60, height: 60, fit: BoxFit.cover)
-                        : const Icon(Icons.book),
-                  ),
+              width: 130,
+              // height: 50, // Remove fixed height
+              child: GestureDetector( // Wrap the Card with GestureDetector
+              onTap: () {
+            // Navigate to BookDetailsPage
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BookDetailsPage(bookData: book),
+              ),
+            );
+          },
+          child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+          children: [
+          SizedBox(
+          height: 150,
+          width: 130, // Set a fixed width for each book item
+          child: imageUrl!= null
+          ? Image.network(
+          imageUrl,
+          width: 130,
+          height: 150,
+          fit: BoxFit.cover,
+          )
+              : const Icon(Icons.book),
+          ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
@@ -276,12 +292,13 @@ Widget _buildNewlyAddedBooks() {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                ],
+          ],
+          ),
+          ),
               ),
-            ),
           );
         },
       );
     },
-  ));
+  );
 }
