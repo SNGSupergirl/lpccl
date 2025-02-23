@@ -19,33 +19,84 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Panel'),
+        title: const Text('Admin Panel'),
       ),
-      body: Center( // Center the button for better UI
-        child: ElevatedButton(
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => BarcodeScannerScreen()),
-            );
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center, // Align buttons vertically in the center
+        children: [
+          const SizedBox(height: 20),
+          const Center(
+            child: Text(
+              "Inventory Management",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 40),
 
-            if (result != null) {
-              String scannedBarcode = result as String;
-              try {
-                final bookData = await fetchBookData(scannedBarcode); // Call fetchBookData
-                await dbHelper.addBook(bookData!); // Call addBook
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Book added!')),
-                );
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error adding book: $e')), // Show error
-                );
-              }
-            }
-          },
-          child: Text('Scan Barcode'),
-        ),
+          // Add to Inventory Button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const BarcodeScannerScreen()),
+                  );
+
+                  if (result!= null) {
+                    String scannedBarcode = result as String;
+                    try {
+                      final bookData =
+                      await fetchBookData(scannedBarcode); // Call fetchBookData
+                      await dbHelper
+                          .addBook(bookData!); // Call addBook
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Book added!')),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text('Error adding book: $e')), // Show error
+                      );
+                    }
+                  }
+                },
+                child: const Text('Add to Inventory'),
+              ),
+            ),
+          ),
+
+          // Edit Inventory Button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Handle Edit Inventory
+                },
+                child: const Text('Edit Inventory'),
+              ),
+            ),
+          ),
+
+          // Check In/Out Button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Handle Check In/Out
+                },
+                child: const Text('Check In/Out'),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
