@@ -294,6 +294,11 @@ class _RegisterPageState extends State<RegisterPage> {
       // 6. Store user data in Firestore
       final user = credential.user;
       if (user != null) {
+// Get the current date in the desired format
+        final now = DateTime.now();
+        final formattedDate = "${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}-${now.year}";
+
+
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'fullName': fullName,
           'username': username,
@@ -306,7 +311,10 @@ class _RegisterPageState extends State<RegisterPage> {
           'zipCode': zipCode, // Add zip code
           'favoriteBook': favoriteBook, // Add favorite book
           'libraryCardNumber': newCardNumber,
-          'memberSince': DateTime.now().toString(), // Add memberSince field
+          'memberSince': formattedDate, // Add memberSince field
+          'lateReturns': 0,
+          'totalBooksCheckedOut': 0,
+          'checkedOut': [], // Add checkedOut field with an empty array
           //... (store other data)
         });
       }

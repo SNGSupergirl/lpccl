@@ -204,7 +204,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       position: const RelativeRect.fromLTRB(1000, 80, 0, 0),
       items: [
-        if (authProvider.isAdmin!= null && authProvider.isAdmin)
+        if (authProvider.isAdmin)
           const PopupMenuItem<String>(
             value: 'Admin Screen',
             child: Text('Admin Screen'),
