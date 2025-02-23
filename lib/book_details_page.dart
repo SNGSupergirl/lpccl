@@ -107,26 +107,29 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            if (authProvider.isLoggedIn) { // Check if logged in
+                            if (authProvider.isLoggedIn) {
                               setState(() {
                                 _isOnHold =!_isOnHold;
                               });
                               _updateBookStatus(
-                                  authProvider.isLoggedIn,
-                                  'holds',
-                                  _isOnHold,
-                                  widget.bookData['isbn']);
+                                authProvider.isLoggedIn,
+                                'holds',
+                                _isOnHold,
+                                widget.bookData['isbn'],
+                              );
                             } else {
-                              // Navigate to LoginPage
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const LoginPage()),
+                                  builder: (context) => const LoginPage(),
+                                ),
                               );
                             }
                           },
                           icon: Image.asset(
-                            'assets/images/hold_icon.png',
+                            _isOnHold
+                                ? 'assets/images/hold_icon.png'
+                                : 'assets/images/hold_icon_add.png',
                             height: 69,
                             width: 69,
                           ),
@@ -138,26 +141,29 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            if (authProvider.isLoggedIn) { // Check if logged in
+                            if (authProvider.isLoggedIn) {
                               setState(() {
                                 _isFavorite =!_isFavorite;
                               });
                               _updateBookStatus(
-                                  authProvider.isLoggedIn,
-                                  'favorites',
-                                  _isFavorite,
-                                  widget.bookData['isbn']);
+                                authProvider.isLoggedIn,
+                                'favorites',
+                                _isFavorite,
+                                widget.bookData['isbn'],
+                              );
                             } else {
-                              // Navigate to LoginPage
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const LoginPage()),
+                                  builder: (context) => const LoginPage(),
+                                ),
                               );
                             }
                           },
                           icon: Image.asset(
-                            'assets/images/favorite_icon.png',
+                            _isFavorite
+                                ? 'assets/images/favorite_icon.png'
+                                : 'assets/images/favorite_icon_add.png',
                             height: 69,
                             width: 69,
                           ),
@@ -169,26 +175,29 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            if (authProvider.isLoggedIn) { // Check if logged in
+                            if (authProvider.isLoggedIn) {
                               setState(() {
                                 _isSaved =!_isSaved;
                               });
                               _updateBookStatus(
-                                  authProvider.isLoggedIn,
-                                  'saved',
-                                  _isSaved,
-                                  widget.bookData['isbn']);
+                                authProvider.isLoggedIn,
+                                'saved',
+                                _isSaved,
+                                widget.bookData['isbn'],
+                              );
                             } else {
-                              // Navigate to LoginPage
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const LoginPage()),
+                                  builder: (context) => const LoginPage(),
+                                ),
                               );
                             }
                           },
                           icon: Image.asset(
-                            'assets/images/save_book_icon_two.png',
+                            _isSaved
+                                ? 'assets/images/save_book_icon_two.png'
+                                : 'assets/images/save_book_icon_two_add.png',
                             height: 69,
                             width: 69,
                           ),
