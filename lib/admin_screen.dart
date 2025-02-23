@@ -3,7 +3,8 @@
 import 'package:flutter/material.dart';
 import 'barcode_scanner_screen.dart'; // Import your barcode scanner screen
 import 'book_api.dart'; // Import your book API functions
-import 'database_helper.dart'; // Import your database helper
+import 'database_helper.dart';
+import 'edit_inventory_page.dart'; // Import your database helper
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -76,7 +77,11 @@ class _AdminScreenState extends State<AdminScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle Edit Inventory
+                  // Navigate to EditInventoryPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const EditInventoryPage()),
+                  );
                 },
                 child: const Text('Edit Inventory'),
               ),
