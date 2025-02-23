@@ -141,18 +141,7 @@ class ProfilePage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text('Overdue/Late:'),
-                              Text(userData['overdueLate'].toString()),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('Saved Books:'),
-                              Text(userData['savedBooks'].toString()),
+                              Text(userData['lateReturns'].toString()),
                             ],
                           ),
                         ),

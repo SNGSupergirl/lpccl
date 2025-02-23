@@ -314,6 +314,7 @@ class _RegisterPageState extends State<RegisterPage> {
           'memberSince': formattedDate, // Add memberSince field
           'lateReturns': 0,
           'totalBooksCheckedOut': 0,
+          'currentlyCheckedOut': 0,
           'checkedOut': [], // Add checkedOut field with an empty array
           //... (store other data)
         });

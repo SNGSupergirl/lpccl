@@ -224,6 +224,13 @@ class _UserDashboardPageState extends State<UserDashboardPage> {
           .update({
         'checkedOutBy.$userId': FieldValue.delete(),
       });
+      // Decrement currentlyCheckedOut
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({
+        'currentlyCheckedOut': FieldValue.increment(-1),
+      });
 
       // Show a success message
       ScaffoldMessenger.of(context).showSnackBar(
@@ -260,7 +267,13 @@ class _UserDashboardPageState extends State<UserDashboardPage> {
           .update({
         'totalBooksCheckedOut': FieldValue.increment(1),
       });
-
+      // Increment currentlyCheckedOut
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({
+        'currentlyCheckedOut': FieldValue.increment(1),
+      });
       // Show a success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Book checked out successfully!')),
