@@ -306,6 +306,7 @@ class _RegisterPageState extends State<RegisterPage> {
           'zipCode': zipCode, // Add zip code
           'favoriteBook': favoriteBook, // Add favorite book
           'libraryCardNumber': newCardNumber,
+          'memberSince': DateTime.now().toString(), // Add memberSince field
           //... (store other data)
         });
       }
