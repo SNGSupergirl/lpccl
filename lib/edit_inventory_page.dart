@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'edit_book_details_page.dart'; // Import the EditBookDetailsPage
 
 class EditInventoryPage extends StatelessWidget {
   const EditInventoryPage({Key? key}): super(key: key);
@@ -46,7 +47,14 @@ class EditInventoryPage extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () {
-                        // Handle Edit
+                        // Navigate to EditBookDetailsPage
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EditBookDetailsPage(bookData: book),
+                          ),
+                        );
                       },
                       icon: const Icon(Icons.edit),
                     ),
