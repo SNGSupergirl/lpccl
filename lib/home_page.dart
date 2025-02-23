@@ -302,7 +302,7 @@ Widget _buildRecentlyCheckedOutBooks() {
     stream: FirebaseFirestore.instance
         .collection('books')
         .where('checkedOutBy', isNotEqualTo: {}) // Filter books that have been checked out
-        .orderBy('publishedDate', descending: true) // Order by published date in descending order (you might need to adjust this based on your data structure)
+        .orderBy('checkedOutBy', descending: true) // Order by the time they were checked out (assuming 'checkedOutBy' stores the timestamp)
         .limit(3) // Limit to the 3 most recent books
         .snapshots(),
     builder: (context, snapshot) {
@@ -316,7 +316,6 @@ Widget _buildRecentlyCheckedOutBooks() {
 
       final books = snapshot.data!.docs;
 
-
       return ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: books.length,
@@ -326,8 +325,7 @@ Widget _buildRecentlyCheckedOutBooks() {
           final imageUrl = imageLinks?['thumbnail'] as String?;
           return SizedBox(
             width: 136,
-            // height: 50, // Remove fixed height
-            child: GestureDetector( // Wrap the Card with GestureDetector
+            child: GestureDetector(
               onTap: () {
                 // Navigate to BookDetailsPage
                 Navigator.push(
