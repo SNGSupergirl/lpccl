@@ -61,7 +61,7 @@ class InventoryPage extends StatelessWidget {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           book['title'],
-                          maxLines: 3, // Increased maxLines to 3
+                          maxLines: 2, // Increased maxLines to 2
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
                         ),

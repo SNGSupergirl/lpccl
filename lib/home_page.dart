@@ -173,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: Image.network(
                           "https://m.media-amazon.com/images/I/51wS8m9c82L._SX322_BO1,2048,1536,1536_.jpg",
-                          fit: BoxFit.cover,
+                          fit: BoxFit.contain,
                         ),
                       );
                     },
@@ -255,7 +255,7 @@ Widget _buildNewlyAddedBooks() {
           final imageLinks = book['imageLinks'] as Map<String, dynamic>?;
           final imageUrl = imageLinks?['thumbnail'] as String?;
           return SizedBox(
-              width: 130,
+              width: 136,
               // height: 50, // Remove fixed height
               child: GestureDetector( // Wrap the Card with GestureDetector
               onTap: () {
@@ -271,18 +271,12 @@ Widget _buildNewlyAddedBooks() {
           clipBehavior: Clip.antiAlias,
           child: Column(
           children: [
-          SizedBox(
-          height: 150,
-          width: 130, // Set a fixed width for each book item
-          child: imageUrl!= null
-          ? Image.network(
-          imageUrl,
-          width: 130,
-          height: 150,
-          fit: BoxFit.cover,
-          )
-              : const Icon(Icons.book),
-          ),
+            SizedBox(
+              height: 130,
+              child: imageUrl!= null
+                  ? Image.network(imageUrl, fit: BoxFit.contain)
+                  : const Icon(Icons.book),
+            ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
