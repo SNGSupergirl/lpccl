@@ -59,8 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 if (userSnapshot.hasData) {
                   final userData = userSnapshot.data!.data() as Map<String, dynamic>;
                   // Update checkedOut list
-                  final checkedOut = userData['checkedOut'] as List<dynamic>;
-
+                  checkedOut = List<String>.from(userData['checkedOut']??[]);
                   return SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,13 +75,13 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                userData['username'] ?? 'Unknown Username',
+                                userData['username']?? 'Unknown Username',
                                 style: const TextStyle(
                                     fontSize: 24, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                  'Member Since: ${userData['memberSince'] ?? 'Unknown'}'),
+                                  'Member Since: ${userData['memberSince']?? 'Unknown'}'),
                             ],
                           ),
                         ),
@@ -172,7 +171,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         const SizedBox(height: 10),
                         // Currently Checked Out Books
-                        _buildCurrentlyCheckedOutBooks(),
+                        _buildCurrentlyCheckedOutBooks(checkedOut),
                         const SizedBox(height: 20),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20),
@@ -220,7 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildCurrentlyCheckedOutBooks() {
+  Widget _buildCurrentlyCheckedOutBooks(List<dynamic> checkedOut) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -256,18 +255,21 @@ class _ProfilePageState extends State<ProfilePage> {
                     ? Image.network(imageUrl)
                     : const Icon(Icons.book),
               ),
-              title: Text(bookData['title']),
-              subtitle: Text(bookData['authors'].join(', ')),
-              trailing: ElevatedButton(
-                onPressed: () {
-                },
-                child: const Text("Check In"),
-              ),
+              title: Text(bookData['title']?? 'Unknown Title'),
+              subtitle: Text(bookData['authors']?.join(', ')?? 'Unknown Author'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookDetailsPage(bookData: bookData),
+                  ),
+                );
+              },
             );
           },
         );
       },
-  );
+    );
   }
   Widget _buildYouMayAlsoLike() {
     return SizedBox(
@@ -302,7 +304,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     );
                   },
-                  child: imageUrl != null
+                  child: imageUrl!= null
                       ? Image.network(imageUrl, fit: BoxFit.cover)
                       : const Icon(Icons.book, size: 100),
                 ),
