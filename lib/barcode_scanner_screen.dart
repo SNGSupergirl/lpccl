@@ -47,7 +47,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          if (!snapshot.hasData ||!snapshot.data!.exists) {
+          if (!snapshot.hasData || !snapshot.data!.exists) {
             return const Center(child: Text('User data not found'));
           }
           final userData = snapshot.data!.data() as Map<String, dynamic>;
@@ -67,8 +67,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       if (barcode!= null) {
                         controller?.stop();
                         try {
-                          // Fetch book data from Google Books API
-                          final bookData = await fetchBookData(barcode!);
+                          // Search for book data across multiple APIs (call the function from book_api.dart)
+                          final bookData = await searchForBookData(barcode!);
+
                           if (bookData!= null) {
                             // Store book data in Firestore
                             await FirebaseFirestore.instance

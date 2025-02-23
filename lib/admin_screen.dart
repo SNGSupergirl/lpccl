@@ -51,7 +51,7 @@ class _AdminScreenState extends State<AdminScreen> {
                     String scannedBarcode = result as String;
                     try {
                       final bookData =
-                      await fetchBookData(scannedBarcode); // Call fetchBookData
+                      await searchForBookData(scannedBarcode); // Call searchForBookData
                       await dbHelper
                           .addBook(bookData!); // Call addBook
                       ScaffoldMessenger.of(context).showSnackBar(
