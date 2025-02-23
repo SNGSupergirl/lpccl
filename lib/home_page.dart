@@ -166,19 +166,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(
                   height: 200,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 3,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.network(
-                          "https://m.media-amazon.com/images/I/51wS8m9c82L._SX322_BO1,2048,1536,1536_.jpg",
-                          fit: BoxFit.contain,
-                        ),
-                      );
-                    },
-                  ),
+                  child: _buildRecentlyCheckedOutBooks(),
+
                 ),
 
                 // View Full Inventory Button
@@ -302,6 +291,74 @@ Widget _buildNewlyAddedBooks() {
           ),
           ),
               ),
+          );
+        },
+      );
+    },
+  );
+}
+Widget _buildRecentlyCheckedOutBooks() {
+  return StreamBuilder<QuerySnapshot>(
+    stream: FirebaseFirestore.instance
+        .collection('books')
+        .orderBy('publishedDate', descending: true)
+        .limit(3)
+        .snapshots(),
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return Center(child: Text('Error: ${snapshot.error}'));
+      }
+
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      final books = snapshot.data!.docs;
+
+
+      return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: books.length,
+        itemBuilder: (context, index) {
+          final book = books[index].data() as Map<String, dynamic>;
+          final imageLinks = book['imageLinks'] as Map<String, dynamic>?;
+          final imageUrl = imageLinks?['thumbnail'] as String?;
+          return SizedBox(
+            width: 136,
+            // height: 50, // Remove fixed height
+            child: GestureDetector( // Wrap the Card with GestureDetector
+              onTap: () {
+                // Navigate to BookDetailsPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookDetailsPage(bookData: book),
+                  ),
+                );
+              },
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 130,
+                      child: imageUrl!= null
+                          ? Image.network(imageUrl, fit: BoxFit.contain)
+                          : const Icon(Icons.book),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        book['title'],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           );
         },
       );
