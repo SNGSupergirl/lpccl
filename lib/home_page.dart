@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'import_page.dart';
 import 'login_page.dart'; // Import your login page
 import 'package:provider/provider.dart';
 import 'auth_provider.dart'; // Import the AuthProvider class
@@ -209,7 +210,12 @@ class _HomePageState extends State<HomePage> {
             value: 'Admin Screen',
             child: Text('Admin Screen'),
           ),
-        const PopupMenuItem<String>( // Add a default menu item
+        if (authProvider.isAdmin) // Show "Import Books" if user is admin
+          const PopupMenuItem<String>(
+            value: 'Import Books',
+            child: Text('Import Books'),
+          ),
+        const PopupMenuItem<String>(
           value: 'Settings',
           child: Text('Settings'),
         ),
@@ -222,6 +228,12 @@ class _HomePageState extends State<HomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const AdminScreen()),
+        );
+      } else if (value == 'Import Books') {
+        // Navigate to ImportPage
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ImportPage()),
         );
       }
       //... (handle other menu items)

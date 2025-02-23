@@ -71,6 +71,8 @@ Future<Map<String, dynamic>?> fetchBookDataFromGoogle(String isbn) async {
         'imageLinks': volumeInfo['imageLinks'] ?? {},
 
         'isbn': isbn,
+
+        'checkedOutBy': {}, // Add checkedOutBy field with an empty map'
       };
     } else {
       return null; // Book not found
@@ -113,7 +115,7 @@ Future<Map<String, dynamic>?> fetchBookDataFromOpenLibrary(String isbn) async {
                 .toList() ??
             [],
         'averageRating': null, // Open Library API doesn't provide ratings
-        'ratingsCount': null, // Open Library API doesn't provide ratings
+        'ratingsCount': null,
         'imageLinks': {
           'thumbnail':
               bookData['cover'] != null

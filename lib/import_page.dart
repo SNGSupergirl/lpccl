@@ -4,9 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
+//import 'package:csv/csv.dart';
+
 
 class ImportPage extends StatelessWidget {
-  const ImportPage({Key? key}): super(key: key);
+  const ImportPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,18 +30,37 @@ class ImportPage extends StatelessWidget {
   Future<void> _importBooks(BuildContext context) async {
     try {
       // 1. Load the JSON file
-      final String jsonString =
-      await rootBundle.loadString('assets/books.json'); // Replace with your JSON file path
+      final String jsonString = await rootBundle.loadString('assets/books.json');
       final Map<String, dynamic> jsonData = json.decode(jsonString);
 
       // 2. Get a reference to the Firestore collection
-      final CollectionReference booksCollection =
-      FirebaseFirestore.instance.collection('books');
+      final CollectionReference booksCollection = FirebaseFirestore.instance.collection('books');
 
       // 3. Iterate through the books and add them to Firestore
       for (final bookId in jsonData.keys) {
         final bookData = jsonData[bookId] as Map<String, dynamic>;
-        await booksCollection.doc(bookId).set(bookData);
+
+
+        // Check if the book already exists
+        final bookQuery = await booksCollection.doc(bookId).get();
+        if (!bookQuery.exists) {
+          // Create a new map with only the desired fields
+          final newBookData = {
+            'title': bookData['title'],
+            'authors': bookData['authors'],
+            'isbn': bookData['isbn'],
+            'format': bookData['format'],
+            'language': bookData['language'],
+            'publication': bookData['publication'],
+            'pages': bookData['pages'],
+            'date': bookData['date'],
+            'summary': bookData['summary'],
+            'genre': bookData['genre'],
+
+            'checkedOutBy': {}, // Add checkedOutBy field with an empty map
+          };
+          await booksCollection.doc(bookId).set(newBookData); // Use newBookData here
+        }
       }
 
       // 4. Show a success message
