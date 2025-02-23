@@ -75,6 +75,9 @@ Future<Map<String, dynamic>?> fetchBookDataFromGoogle(String isbn) async {
         'dateAdded': DateTime.now().toString(), // Add dateAdded field
 
         'checkedOutBy': {}, // Add checkedOutBy field with an empty map'
+
+        'checkedInBy': {},
+
       };
     } else {
       return null; // Book not found
@@ -127,6 +130,7 @@ Future<Map<String, dynamic>?> fetchBookDataFromOpenLibrary(String isbn) async {
         'isbn': isbn,
         'dateAdded': DateTime.now().toString(), // Add dateAdded field
         'checkedOutBy': {}, // Add checkedOutBy field with an empty map'
+        'checkedInBy': {},
       };
     } else {
       return null; // Book not found

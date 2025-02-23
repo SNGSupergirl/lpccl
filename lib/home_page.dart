@@ -233,7 +233,7 @@ Widget _buildNewlyAddedBooks() {
   return StreamBuilder<QuerySnapshot>(
     stream: FirebaseFirestore.instance
         .collection('books')
-        .orderBy('publishedDate', descending: true)
+        .orderBy('dateAdded', descending: true)
         .limit(3)
         .snapshots(),
     builder: (context, snapshot) {
@@ -301,8 +301,9 @@ Widget _buildRecentlyCheckedOutBooks() {
   return StreamBuilder<QuerySnapshot>(
     stream: FirebaseFirestore.instance
         .collection('books')
-        .orderBy('publishedDate', descending: true)
-        .limit(3)
+        .where('checkedOutBy', isNotEqualTo: {}) // Filter books that have been checked out
+        .orderBy('publishedDate', descending: true) // Order by published date in descending order (you might need to adjust this based on your data structure)
+        .limit(3) // Limit to the 3 most recent books
         .snapshots(),
     builder: (context, snapshot) {
       if (snapshot.hasError) {

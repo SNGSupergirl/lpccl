@@ -5,12 +5,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'edit_profile_page.dart';
-import 'favorites_page.dart'; // Import the FavoritesPage
-import 'holds_page.dart'; // Import the HoldsPage
-import 'saved_page.dart'; // Import the SavedPage
+import 'favorites_page.dart';
+import 'holds_page.dart';
+import 'saved_page.dart';
+import 'book_details_page.dart'; // Import BookDetailsPage
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  List<String> checkedOut = [];
+  List<Map<String, dynamic>> youMayAlsoLike = [];
+  List<String> badges = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize checkedOut, youMayAlsoLike, and badges here if needed
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +34,8 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("LPCC Library"),
         actions: [
-          // Edit Profile Button
           ElevatedButton(
             onPressed: () {
-              // Navigate to EditProfilePage
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const EditProfilePage()),
@@ -43,8 +57,10 @@ class ProfilePage extends StatelessWidget {
                   .get(),
               builder: (context, userSnapshot) {
                 if (userSnapshot.hasData) {
-                  final userData =
-                  userSnapshot.data!.data() as Map<String, dynamic>;
+                  final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+                  // Update checkedOut list
+                  final checkedOut = userData['checkedOut'] as List<dynamic>;
+
                   return SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,13 +76,13 @@ class ProfilePage extends StatelessWidget {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                userData['username']?? 'Unknown Username',
+                                userData['username'] ?? 'Unknown Username',
                                 style: const TextStyle(
                                     fontSize: 24, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                  'Member Since: ${userData['memberSince']?? 'Unknown'}'),
+                                  'Member Since: ${userData['memberSince'] ?? 'Unknown'}'),
                             ],
                           ),
                         ),
@@ -90,25 +106,26 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // Holds, Favorites, and Saved Icons
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             _buildIconWithText(
                               'assets/images/hold_icon.png',
                               'Holds',
-                                  () => _navigateToPage(context, const HoldsPage()),
+                                  () =>
+                                  _navigateToPage(context, const HoldsPage()),
                             ),
                             _buildIconWithText(
                               'assets/images/favorite_icon.png',
                               'Favorites',
-                                  () =>
-                                  _navigateToPage(context, const FavoritesPage()),
+                                  () => _navigateToPage(
+                                  context, const FavoritesPage()),
                             ),
                             _buildIconWithText(
                               'assets/images/save_book_icon_two.png',
                               'Saved',
-                                  () => _navigateToPage(context, const SavedPage()),
+                                  () =>
+                                  _navigateToPage(context, const SavedPage()),
                             ),
                           ],
                         ),
@@ -149,28 +166,24 @@ class ProfilePage extends StatelessWidget {
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
+                            'Currently Checked-Out',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        // Currently Checked Out Books
+                        _buildCurrentlyCheckedOutBooks(),
+                        const SizedBox(height: 20),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
                             'You may also like:',
                             style: TextStyle(fontSize: 18),
                           ),
                         ),
                         const SizedBox(height: 10),
                         // You may also like section (horizontal listview)
-                        SizedBox(
-                          height: 200,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 3, // Replace with actual number of books
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.network(
-                                  "https://m.media-amazon.com/images/I/51wS8m9c82L._SX322_BO1,2048,1536,1536_.jpg",
-                                  fit: BoxFit.cover,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                        _buildYouMayAlsoLike(),
                         const SizedBox(height: 20),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20),
@@ -181,23 +194,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         // Badges section (horizontal listview)
-                        SizedBox(
-                          height: 100,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount:
-                            3, // Replace with actual number of badges
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.network(
-                                  "https://m.media-amazon.com/images/I/51wS8m9c82L._SX322_BO1,2048,1536,1536_.jpg",
-                                  fit: BoxFit.cover,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                        _buildBadges(),
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -218,6 +215,121 @@ class ProfilePage extends StatelessWidget {
               child: Text('User not logged in'),
             );
           }
+        },
+      ),
+    );
+  }
+
+  Widget _buildCurrentlyCheckedOutBooks() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: checkedOut.length,
+      itemBuilder: (context, index) {
+        final bookId = checkedOut[index] as String;
+        return FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance
+              .collection('books')
+              .doc(bookId)
+              .get(),
+          builder: (context, bookSnapshot) {
+            if (bookSnapshot.hasError) {
+              return ListTile(
+                  title: Text('Error: ${bookSnapshot.error}'));
+            }
+
+            if (bookSnapshot.connectionState ==
+                ConnectionState.waiting) {
+              return const ListTile(title: Text('Loading...'));
+            }
+
+            final bookData =
+            bookSnapshot.data!.data() as Map<String, dynamic>;
+            final imageLinks =
+            bookData['imageLinks'] as Map<String, dynamic>?;
+            final imageUrl = imageLinks?['thumbnail'] as String?;
+            return ListTile(
+              leading: SizedBox(
+                width: 50,
+                height: 50,
+                child: imageUrl!= null
+                    ? Image.network(imageUrl)
+                    : const Icon(Icons.book),
+              ),
+              title: Text(bookData['title']),
+              subtitle: Text(bookData['authors'].join(', ')),
+              trailing: ElevatedButton(
+                onPressed: () {
+                },
+                child: const Text("Check In"),
+              ),
+            );
+          },
+        );
+      },
+  );
+  }
+  Widget _buildYouMayAlsoLike() {
+    return SizedBox(
+      height: 200,
+      child: FutureBuilder<QuerySnapshot>(
+        future: FirebaseFirestore.instance.collection('books').limit(5).get(), // Fetch 5 random books
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Text('No books found');
+          }
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              final bookData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+              final imageLinks = bookData['imageLinks'] as Map<String, dynamic>?;
+              final imageUrl = imageLinks?['thumbnail'] as String?;
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BookDetailsPage(bookData: bookData),
+                      ),
+                    );
+                  },
+                  child: imageUrl != null
+                      ? Image.network(imageUrl, fit: BoxFit.cover)
+                      : const Icon(Icons.book, size: 100),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+  Widget _buildBadges() {
+    // Replace with your actual badge logic
+    List<String> badgeUrls = [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Gold_Star.svg/1200px-Gold_Star.svg.png",
+      "https://cdn-icons-png.flaticon.com/512/2107/2107957.png",
+      "https://cdn-icons-png.flaticon.com/512/2107/2107957.png",
+    ];
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: badgeUrls.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.network(badgeUrls[index], fit: BoxFit.cover),
+          );
         },
       ),
     );

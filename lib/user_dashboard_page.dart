@@ -222,7 +222,7 @@ class _UserDashboardPageState extends State<UserDashboardPage> {
           .collection('books')
           .doc(bookId)
           .update({
-        'checkedOutBy.$userId': FieldValue.delete(),
+        'checkedInBy.$userId': DateTime.now().toString(),
       });
       // Decrement currentlyCheckedOut
       await FirebaseFirestore.instance
