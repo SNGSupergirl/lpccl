@@ -1,8 +1,9 @@
 //   user_dashboard_page.dart
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'barcode_scanner_screen.dart';
 
 class UserDashboardPage extends StatefulWidget {
   final String userId;
@@ -113,7 +114,7 @@ class _UserDashboardPageState extends State<UserDashboardPage> {
                           subtitle: Text(bookData['authors'].join(', ')),
                           trailing: ElevatedButton(
                             onPressed: () {
-                              // Handle check in
+                              _checkInBook(bookId, widget.userId);
                             },
                             child: const Text("Check In"),
                           ),
@@ -179,8 +180,19 @@ class _UserDashboardPageState extends State<UserDashboardPage> {
                         style: TextStyle(fontSize: 18),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          // Handle check out
+                        onPressed: () async {
+                          // Navigate to BarcodeScannerScreen
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const BarcodeScannerScreen()),
+                          );
+
+                          if (result!= null) {
+                            final scannedIsbn = result as String;
+                            // Check out the book for the user
+                            _checkOutBook(scannedIsbn, widget.userId);
+                          }
                         },
                         child: const Text("Check-Out"),
                       ),
@@ -195,4 +207,70 @@ class _UserDashboardPageState extends State<UserDashboardPage> {
       ),
     );
   }
+  Future<void> _checkInBook(String bookId, String userId) async {
+    try {
+      // Remove the book from the user's checkedOut array
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({
+        'checkedOut': FieldValue.arrayRemove([bookId]),
+      });
+
+      // Remove the user from the book's checkedOutBy map
+      await FirebaseFirestore.instance
+          .collection('books')
+          .doc(bookId)
+          .update({
+        'checkedOutBy.$userId': FieldValue.delete(),
+      });
+
+      // Show a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Book checked in successfully!')),
+      );
+    } catch (e) {
+      // Show an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error checking in book: $e')),
+      );
+    }
+  }
+  Future<void> _checkOutBook(String bookId, String userId) async {
+    try {
+      // Add the book to the user's checkedOut array
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({
+        'checkedOut': FieldValue.arrayUnion([bookId]),
+      });
+
+      // Add the user to the book's checkedOutBy map
+      await FirebaseFirestore.instance
+          .collection('books')
+          .doc(bookId)
+          .update({
+        'checkedOutBy.$userId': DateTime.now().toString(),
+      });
+      // Increment totalBooksCheckedOut
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({
+        'totalBooksCheckedOut': FieldValue.increment(1),
+      });
+
+      // Show a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Book checked out successfully!')),
+      );
+    } catch (e) {
+      // Show an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error checking out book: $e')),
+      );
+    }
+  }
+
 }
